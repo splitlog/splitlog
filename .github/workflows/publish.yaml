@@ -1,0 +1,55 @@
+name: Publish to PyPI
+on: 
+  push:
+    tags:
+        - v**
+
+jobs:
+  publish:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.6"
+      - name: Cache Dependencies
+        id: cache-dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-3.6-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-3.6-poetry-
+      - name: Poetry
+        id: poetry
+        run: python -m pip install poetry==1.1.11 poetry-dynamic-versioning
+      - name: Install project
+        id: install
+        run: poetry install
+      - name: mypy
+        id: mypy
+        run: poetry run mypy .
+      - name: black
+        id: black
+        run: poetry run black --check .
+      - name: build
+        id: build
+        run: poetry build
+      - name: Publish
+        id: publish
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: ${{ secrets.PYPI_USER_NAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
+          repository_url: ${{ secrets.PYPI_REPO_URL }}

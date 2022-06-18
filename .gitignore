@@ -1,0 +1,13 @@
+/build/
+*.pyc
+*.pyo
+dist/
+.venv/
+*.egg-info/
+composite.gradle
+.gradle/
+*.iml
+.pytest_cache/
+.mypy_cache/
+.coverage
+*.idea/

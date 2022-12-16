@@ -25,21 +25,21 @@ outputfolder
  
 Installation
 ------------
-Python 3.6+ must be available.
+Python 3.7+ must be available.
 
-1. Create a a new venv using `python -m venv .venv`
-2. Activate venv using `. .venv/bin/activate`
-3. Run `python -m pip install -e splitlog`
+```shell script
+pipx install splitlog
+```
  
 How to use
 ----------
 
 Read logs from standard input:
 ```shell script
-yarn logs -applicationId application_1582815261257_232080 | python -m splitlog application_1582815261257_232080
+yarn logs -applicationId application_1582815261257_232080 | splitlog application_1582815261257_232080
 ```
 
 Read logs from file `application_1582815261257_232080.log`:
 ```shell script
-python -m splitlog -i application_1582815261257_232080.log application_1582815261257_232080 
+splitlog -i application_1582815261257_232080.log application_1582815261257_232080
 ```

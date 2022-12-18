@@ -7,6 +7,8 @@ from typing import BinaryIO, Optional, Set
 
 from dateutil.parser import parse as parse_date
 
+from splitlog.outputfolder import OutputFolder
+
 logger = logging.getLogger(__name__)
 
 
@@ -42,7 +44,9 @@ class _Splitter(object):
         r"""^\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*+$"""
     )
 
-    def __init__(self: "_Splitter", infile: BinaryIO, output_path: Path) -> None:
+    def __init__(
+        self: "_Splitter", infile: BinaryIO, output_folder: OutputFolder
+    ) -> None:
         self.container: Optional[str] = None
         self.host: Optional[str] = None
         self.port: Optional[int] = None
@@ -51,7 +55,7 @@ class _Splitter(object):
         self.length: Optional[int] = None
         self.dirs_created: Set[Path] = set()
         self.infile: BinaryIO = infile
-        self.output_path: Path = output_path
+        self.output_folder: OutputFolder = output_folder
         self.offset: int = 0
         self.line: Optional[str] = None
         self.eof: bool = False
@@ -243,14 +247,14 @@ class _Splitter(object):
 
     def _create_hierarchy(self: "_Splitter") -> Path:
         assert self.host is not None, "host must be present"
-        host_dir = self.output_path / self.host
+        host_dir = self.output_folder.root / self.host
         if host_dir not in self.dirs_created:
-            host_dir.mkdir()
+            self.output_folder.mkdir(host_dir)
             self.dirs_created.add(host_dir)
         assert self.container is not None, "container must be present"
         container_dir = host_dir / self.container
         if container_dir not in self.dirs_created:
-            container_dir.mkdir()
+            self.output_folder.mkdir(container_dir)
             self.dirs_created.add(container_dir)
         return container_dir
 
@@ -267,7 +271,7 @@ class _Splitter(object):
         container_dir = self._create_hierarchy()
         assert self.filename, "filename must be present"
         log_path = container_dir / self.filename
-        with log_path.open("xb") as outfile:
+        with self.output_folder.create(log_path) as outfile:
             assert self.length is not None, "length must be present"
             logger.debug("Created log file %s, size: %d", log_path, self.length)
             remaining = self.length
@@ -275,9 +279,11 @@ class _Splitter(object):
                 data = self.infile.read(remaining)
                 if len(data) == 0:
                     raise self._parse_error("Unexpected end-of-file while copying log")
-                outfile.write(data)
-                remaining -= len(data)
-                self.offset += len(data)
+                while len(data) > 0:
+                    written = outfile.write(data)
+                    remaining -= written
+                    self.offset += written
+                    data = data[written:]
             logger.debug("Copied %d bytes", self.length)
 
     def _readline(self: "_Splitter") -> None:
@@ -316,7 +322,7 @@ class _Splitter(object):
         return parse_error
 
 
-def split(infile: BinaryIO, output_path: Path) -> None:
-    splitter = _Splitter(infile=infile, output_path=output_path)
+def split(infile: BinaryIO, output_folder: OutputFolder) -> None:
+    splitter = _Splitter(infile=infile, output_folder=output_folder)
 
     splitter.split()

@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from typing import BinaryIO, List, NamedTuple, Optional
 
+from splitlog.outputfolder import LocalFilesystemOutputFolder
+
 _NAME = "splitlog"
 
 
@@ -130,14 +132,12 @@ def main(cli_args: Optional[List[str]] = None) -> None:
     with _open_input(args.input_file) as infile:
         assert args.output_folder is not None, "output_folder argument must be present"
         try:
-            args.output_folder.mkdir(exist_ok=False)
+            with LocalFilesystemOutputFolder(args.output_folder) as output_folder:
+                split(infile, output_folder)
         except FileNotFoundError as e:
             _error_exit(e)
         except FileExistsError as e:
             _error_exit(e)
-
-        try:
-            split(infile, args.output_folder)
         except ParseError as e:
             logger.debug("Exception caught", exc_info=e)
             _error_exit(e)

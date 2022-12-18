@@ -7,25 +7,39 @@ provided for hits often does not include Yarn container name or host name. `spli
 containers of an application into a file system hierarchy suitable for further analysis:
 
 ```
-outputfolder
-|--. hadoopnode1
-|  |--. container_a_b
-|  |  |--> stderr.log
-|  |  '--> stdout.log
-|  |  
-|  '--. container_x_y
-|     |--> stderr.log
-|     '--> stdout.log
-|
-'--. hadoopnode2
-   `--. container_p_q
-      |--> stderr.log
-      `--> stdout.log
+out
+└── hadoopnode
+    ├── container_1671326373437_0001_01_000001
+    │   ├── directory.info
+    │   ├── launch_container.sh
+    │   ├── prelaunch.err
+    │   ├── prelaunch.out
+    │   ├── stderr
+    │   ├── stdout
+    │   └── syslog
+    ├── container_1671326373437_0001_01_000002
+    │   ├── directory.info
+    │   ├── launch_container.sh
+    │   ├── prelaunch.err
+    │   ├── prelaunch.out
+    │   ├── stderr
+    │   ├── stdout
+    │   └── syslog
+    └── container_1671326373437_0001_01_000003
+        ├── directory.info
+        ├── launch_container.sh
+        ├── prelaunch.err
+        ├── prelaunch.out
+        ├── stderr
+        ├── stdout
+        └── syslog
+
+4 directories, 21 files
 ```
  
 Installation
 ------------
-Python 3.7+ must be available.
+Python 3.7+ must be available. Installation via [pipx](https://pypi.org/project/pipx/):
 
 ```shell script
 pipx install splitlog
@@ -36,10 +50,10 @@ How to use
 
 Read logs from standard input:
 ```shell script
-yarn logs -applicationId application_1582815261257_232080 | splitlog application_1582815261257_232080
+yarn logs -applicationId application_1582815261257_232080 | splitlog
 ```
 
 Read logs from file `application_1582815261257_232080.log`:
 ```shell script
-splitlog -i application_1582815261257_232080.log application_1582815261257_232080
+splitlog -i application_1582815261257_232080.log
 ```

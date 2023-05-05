@@ -102,7 +102,6 @@ def _version_exit():
 
 
 def main(cli_args: Optional[List[str]] = None) -> None:
-
     import sys
 
     if cli_args is None:

@@ -263,9 +263,8 @@ class _Splitter(object):
         assert self.filename, "filename must be present"
         log_path = container_dir / self.filename
 
-        log_path.touch(exist_ok=False)
-
-        logger.debug("Created empty log file %s", log_path)
+        with self.output_folder.create(log_path) as outfile:
+            logger.debug("Created empty log file %s", log_path)
 
     def _copy(self: "_Splitter") -> None:
         container_dir = self._create_hierarchy()

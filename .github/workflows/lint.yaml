@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
       - name: Install poetry
         id: poetry
-        run: pipx install poetry~=1.6.1
+        run: pipx install poetry~=1.8.3
       - name: Install poetry-dynamic-versioning
         id: poetry-dynamic-versioning
         run: poetry self add "poetry-dynamic-versioning[plugin]"

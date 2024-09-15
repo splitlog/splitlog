@@ -39,7 +39,7 @@ out
  
 Installation
 ------------
-Python 3.7+ must be available. Installation via [pipx](https://pypi.org/project/pipx/):
+Python 3.8+ must be available. Installation via [pipx](https://pypi.org/project/pipx/):
 
 ```shell script
 pipx install splitlog

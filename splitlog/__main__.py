@@ -1,5 +1,6 @@
 import argparse
 import sys
+from importlib.metadata import distribution
 from pathlib import Path
 from typing import BinaryIO, List, NamedTuple, Optional
 
@@ -86,8 +87,6 @@ def _open_input(file: Optional[Path]) -> BinaryIO:
 
 
 def _version_exit():
-    from importlib_metadata import distribution
-
     metadata = distribution(_NAME)
 
     version = metadata.version

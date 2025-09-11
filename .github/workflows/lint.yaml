@@ -30,7 +30,7 @@ jobs:
         run: poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Setup python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'

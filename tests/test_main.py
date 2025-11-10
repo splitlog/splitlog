@@ -38,7 +38,7 @@ def test_main(testcase: Path, tmp_path: Path):
         with input_file.open("xb") as f_out:
             copyfileobj(f_in, f_out)
 
-    unpack_archive(expected_output_tarball, expected)
+    unpack_archive(expected_output_tarball, expected, filter="data")
 
     from splitlog.__main__ import main
 

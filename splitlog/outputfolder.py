@@ -214,7 +214,7 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
 
     def create(self, path: Path) -> BinWriter:
         real_path = self._ensure_path_under_root(path)
-        return FileWrapper(open(path, "xb", opener=self._opener))
+        return FileWrapper(open(real_path, "xb", opener=self._opener))
 
     def _ensure_path_under_root(self, path: Path) -> Path:
         assert not path.is_absolute(), f"Path {path} must be relative"

@@ -222,10 +222,9 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
         # remove all ".." and "." components
         real_path = Path(os.path.normpath(self._path / path))
 
-        # assert resulting absolute path is still inside self._path
-        assert _is_relative_to(
-            real_path, self._path
-        ), f"Path {path} outside {self._path}"
+        # ensure resulting absolute path is still inside self._path
+        if not _is_relative_to(real_path, self._path):
+            raise ValueError(f"Path {path} outside {self._path}")
         return real_path.relative_to(self._path)
 
     @staticmethod

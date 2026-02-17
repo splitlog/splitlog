@@ -77,7 +77,7 @@ def _is_relative_to(path: Path, parent: Path) -> bool:
         return True
 
 
-class DefaultLocalFilesystemOutputFolder(OutputFolder, metaclass=abc.ABCMeta):
+class DefaultLocalFilesystemOutputFolder(OutputFolder):
     """Encapsulates filesystem IO on output folders.
 
     This implementation is portable but unsafe to use when invoking splitlog with privileges.
@@ -114,11 +114,11 @@ class DefaultLocalFilesystemOutputFolder(OutputFolder, metaclass=abc.ABCMeta):
         os.mkdir(real_path, mode=self.DIR_MODE)
 
     def _check_paths(self, path: Path) -> Path:
-        assert not path.is_absolute(), f"Path {path} must be relative"
+        if path.is_absolute():
+            raise ValueError(f"Path {path} must be relative")
         real_path = Path(os.path.normpath(self._path / path))
-        assert _is_relative_to(
-            real_path, self._path
-        ), f"Path {path} outside {self._path}"
+        if not _is_relative_to(real_path, self._path):
+            raise ValueError(f"Path {path} outside {self._path}")
         return real_path
 
     def create(self, path: Path) -> BinWriter:
@@ -217,15 +217,15 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
         return FileWrapper(open(real_path, "xb", opener=self._opener))
 
     def _ensure_path_under_root(self, path: Path) -> Path:
-        assert not path.is_absolute(), f"Path {path} must be relative"
+        if path.is_absolute():
+            raise ValueError(f"Path {path} must be relative")
 
         # remove all ".." and "." components
         real_path = Path(os.path.normpath(self._path / path))
 
-        # assert resulting absolute path is still inside self._path
-        assert _is_relative_to(
-            real_path, self._path
-        ), f"Path {path} outside {self._path}"
+        # ensure resulting absolute path is still inside self._path
+        if not _is_relative_to(real_path, self._path):
+            raise ValueError(f"Path {path} outside {self._path}")
         return real_path.relative_to(self._path)
 
     @staticmethod

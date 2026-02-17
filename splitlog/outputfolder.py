@@ -77,7 +77,7 @@ def _is_relative_to(path: Path, parent: Path) -> bool:
         return True
 
 
-class DefaultLocalFilesystemOutputFolder(OutputFolder, metaclass=abc.ABCMeta):
+class DefaultLocalFilesystemOutputFolder(OutputFolder):
     """Encapsulates filesystem IO on output folders.
 
     This implementation is portable but unsafe to use when invoking splitlog with privileges.

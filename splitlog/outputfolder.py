@@ -217,7 +217,8 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
         return FileWrapper(open(real_path, "xb", opener=self._opener))
 
     def _ensure_path_under_root(self, path: Path) -> Path:
-        assert not path.is_absolute(), f"Path {path} must be relative"
+        if path.is_absolute():
+            raise ValueError(f"Path {path} must be relative")
 
         # remove all ".." and "." components
         real_path = Path(os.path.normpath(self._path / path))

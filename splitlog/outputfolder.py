@@ -114,11 +114,11 @@ class DefaultLocalFilesystemOutputFolder(OutputFolder, metaclass=abc.ABCMeta):
         os.mkdir(real_path, mode=self.DIR_MODE)
 
     def _check_paths(self, path: Path) -> Path:
-        assert not path.is_absolute(), f"Path {path} must be relative"
+        if path.is_absolute():
+            raise ValueError(f"Path {path} must be relative")
         real_path = Path(os.path.normpath(self._path / path))
-        assert _is_relative_to(
-            real_path, self._path
-        ), f"Path {path} outside {self._path}"
+        if not _is_relative_to(real_path, self._path):
+            raise ValueError(f"Path {path} outside {self._path}")
         return real_path
 
     def create(self, path: Path) -> BinWriter:

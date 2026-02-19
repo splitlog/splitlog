@@ -123,7 +123,12 @@ class DefaultLocalFilesystemOutputFolder(OutputFolder):
 
     def create(self, path: Path) -> BinWriter:
         real_path = self._check_paths(path)
-        return FileWrapper(open(real_path, "xb"))
+        f = open(real_path, "xb")
+        try:
+            return FileWrapper(f)
+        except Exception:
+            f.close()
+            raise
 
     @property
     def root(self) -> Path:

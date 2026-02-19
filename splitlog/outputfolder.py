@@ -179,7 +179,12 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
         parent_dir_fd = self._open_dir_fd(parent, no_follow=False)
 
         try:
-            os.mkdir(name, mode=self.DIR_MODE, dir_fd=parent_dir_fd)
+            try:
+                os.mkdir(name, mode=self.DIR_MODE, dir_fd=parent_dir_fd)
+            except OSError as e:
+                # Provide more context including the full path and original reason.
+                full_path = self._path
+                raise OSError(f"Failed to create output folder '{full_path}': {e}") from e
             self._dir_fd = self._open_dir_fd(name, no_follow=True, dir_fd=parent_dir_fd)
             return self
         finally:

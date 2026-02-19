@@ -123,7 +123,12 @@ class DefaultLocalFilesystemOutputFolder(OutputFolder):
 
     def create(self, path: Path) -> BinWriter:
         real_path = self._check_paths(path)
-        return FileWrapper(open(real_path, "xb"))
+        f = open(real_path, "xb")
+        try:
+            return FileWrapper(f)
+        except Exception:
+            f.close()
+            raise
 
     @property
     def root(self) -> Path:
@@ -162,9 +167,10 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
         return True
 
     def __init__(self, path: Path):
-        assert (
-            self.is_supported()
-        ), "File system semantics are not supported by runtime environment"
+        if not self.is_supported():
+            raise RuntimeError(
+                "File system semantics are not supported by runtime environment"
+            )
         self._path: Path = path.resolve()
         self._dir_fd: t.Union[int, None] = None
 

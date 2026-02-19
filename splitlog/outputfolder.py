@@ -7,7 +7,6 @@ import types
 import typing as t
 from pathlib import Path
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -200,7 +199,9 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
             except OSError as e:
                 # Provide more context including the full path and original reason.
                 full_path = self._path
-                raise OSError(f"Failed to create output folder '{full_path}': {e}") from e
+                raise OSError(
+                    f"Failed to create output folder '{full_path}': {e}"
+                ) from e
             self._dir_fd = self._open_dir_fd(name, no_follow=True, dir_fd=parent_dir_fd)
             return self
         finally:

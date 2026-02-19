@@ -162,9 +162,10 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
         return True
 
     def __init__(self, path: Path):
-        assert (
-            self.is_supported()
-        ), "File system semantics are not supported by runtime environment"
+        if not self.is_supported():
+            raise RuntimeError(
+                "File system semantics are not supported by runtime environment"
+            )
         self._path: Path = path.resolve()
         self._dir_fd: t.Union[int, None] = None
 

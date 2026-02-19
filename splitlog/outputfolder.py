@@ -220,7 +220,12 @@ class LinuxLocalFilesystemOutputFolder(OutputFolder):
 
     def create(self, path: Path) -> BinWriter:
         real_path = self._ensure_path_under_root(path)
-        return FileWrapper(open(real_path, "xb", opener=self._opener))
+        f = open(real_path, "xb", opener=self._opener)
+        try:
+            return FileWrapper(f)
+        except Exception:
+            f.close()
+            raise
 
     def _ensure_path_under_root(self, path: Path) -> Path:
         if path.is_absolute():

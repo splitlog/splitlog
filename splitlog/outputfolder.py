@@ -97,17 +97,7 @@ class DefaultLocalFilesystemOutputFolder(OutputFolder):
         self._path: Path = path.resolve()
 
     def __enter__(self) -> OutputFolder:
-        try:
-            self._path.mkdir(mode=self.DIR_MODE, exist_ok=False)
-        except OSError as exc:
-            _logger.error(
-                "Failed to create output folder '%s': %s",
-                self._path,
-                exc,
-            )
-            raise RuntimeError(
-                f"Failed to create output folder '{self._path}': {exc}"
-            ) from exc
+        self._path.mkdir(mode=self.DIR_MODE, exist_ok=False)
         return self
 
     def __exit__(

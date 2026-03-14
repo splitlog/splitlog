@@ -24,10 +24,7 @@ jobs:
           fetch-depth: 0
       - name: Install poetry
         id: poetry
-        run: pipx install poetry~=2.2.1
-      - name: Inject poetry-dynamic-versioning
-        id: poetry-dynamic-versioning
-        run: pipx inject poetry "poetry-dynamic-versioning[plugin]~=1.9.1"
+        run: pipx install poetry~=2.3.2
       - name: Setup python
         id: setup-python
         uses: actions/setup-python@v6

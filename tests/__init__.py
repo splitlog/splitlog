@@ -1,69 +1,37 @@
-import types
 import typing as t
-from pathlib import Path
-
-from splitlog import OutputFolder
-from splitlog.outputfolder import BinWriter
+from fsspec.implementations.memory import MemoryFileSystem  # type: ignore
 
 
-class ByteArrayWriter(BinWriter):
-    def __init__(self, buffer: bytearray):
-        self._value = buffer
+def filesystem_to_dict(fs: MemoryFileSystem) -> t.Dict[str, t.Any]:
+    """
+    Walks a MemoryFileSystem and returns a nested dictionary representing the structure.
+    Files are represented as bytes.
+    Directories are represented as nested dictionaries.
+    """
+    result: t.Dict[str, t.Any] = {}
+    # Use find to get all files. Directories are inferred from file paths.
+    # If empty directories are important, we'd need to handle them,
+    # but the fixture only asserts on file content and structure.
+    # However, to match the original InMemoryOutputFolder behavior which created empty dicts for dirs:
 
-    def write(self, b: bytes) -> int:
-        before = len(self._value)
-        self._value.extend(b)
-        return len(self._value) - before
+    # We'll traverse all paths known to fs.
+    # fs.find might not return empty directories.
+    # fs.walk might be better.
 
-    def __exit__(
-        self,
-        exc: t.Union[t.Type[BaseException], None],
-        value: t.Union[BaseException, None],
-        tb: t.Union[types.TracebackType, None],
-    ) -> None:
-        return None
+    for path, info in fs.find("/", detail=True).items():
+        clean_path = path.strip("/")
+        if not clean_path:
+            continue
 
+        parts = clean_path.split("/")
+        current = result
 
-class InMemoryOutputFolder(OutputFolder):
-    def __init__(self):
-        self._store = dict()
+        if info["type"] == "directory":
+            for part in parts:
+                current = current.setdefault(part, {})
+        elif info["type"] == "file":
+            for part in parts[:-1]:
+                current = current.setdefault(part, {})
+            current[parts[-1]] = fs.cat_file(path)
 
-    @property
-    def output(self):
-        return self._store
-
-    @property
-    def root(self) -> Path:
-        return Path()
-
-    def mkdir(self, path: Path) -> None:
-        assert not path.is_absolute(), f"Path {path} must be relative"
-        cur = self._store
-        for component in path.parent.parts:
-            cur = cur.get(component)
-            if cur is None:
-                raise FileNotFoundError(f"{path.parent}")
-        if path.name in cur:
-            raise FileExistsError(f"{path}")
-        cur[path.name] = dict()
-
-    def create(self, path: Path) -> BinWriter:
-        assert not path.is_absolute(), f"Path {path} must be relative"
-        cur = self._store
-        for component in path.parent.parts:
-            cur = cur.get(component)
-            if cur is None:
-                raise FileNotFoundError(f"{path.parent}")
-        if path.name in cur:
-            raise FileExistsError(f"{path}")
-        buffer = bytearray()
-        cur[path.name] = buffer
-        return ByteArrayWriter(buffer)
-
-    def __exit__(
-        self,
-        exc: t.Union[t.Type[BaseException], None],
-        value: t.Union[BaseException, None],
-        tb: t.Union[types.TracebackType, None],
-    ) -> None:
-        return None
+    return result

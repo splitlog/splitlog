@@ -49,3 +49,30 @@ def test_main(testcase: Path, tmp_path: Path):
     dcmp.report()
 
     assert_dircmp_same(dcmp)
+
+
+def test_main_exists_raises(tmp_path: Path):
+    from splitlog.__main__ import main
+
+    output = tmp_path / "exists"
+    output.mkdir()
+
+    input_file = tmp_path / "input.txt"
+    input_file.write_text("dummy")
+
+    with pytest.raises(SystemExit) as e:
+        main(["--input-file", str(input_file), str(output)])
+    assert e.value.code == 1
+
+
+def test_main_missing_parent_raises(tmp_path: Path):
+    from splitlog.__main__ import main
+
+    output = tmp_path / "missing" / "subdir"
+
+    input_file = tmp_path / "input.txt"
+    input_file.write_text("dummy")
+
+    with pytest.raises(SystemExit) as e:
+        main(["--input-file", str(input_file), str(output)])
+    assert e.value.code == 1

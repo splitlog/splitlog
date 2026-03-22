@@ -1,7 +1,9 @@
 from io import BytesIO
 
+from fsspec.implementations.memory import MemoryFileSystem  # type: ignore
+
 from splitlog import split
-from tests import InMemoryOutputFolder
+from tests import filesystem_to_dict
 
 INPUT_FIXTURE = b"""Container: container_1671326373437_0001_01_000003 on hadoopnode_36113
 LogAggregationType: AGGREGATED
@@ -1497,7 +1499,7 @@ user.name: yarn
 
 def test_splitter():
     with BytesIO(initial_bytes=INPUT_FIXTURE) as infile:
-        with InMemoryOutputFolder() as of:
-            split(infile=infile, output_folder=of)
+        fs = MemoryFileSystem(store={})
+        split(infile=infile, output_folder=fs)
 
-    assert of.output == OUTPUT_FIXTURE
+    assert filesystem_to_dict(fs) == OUTPUT_FIXTURE

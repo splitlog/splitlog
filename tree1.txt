@@ -1,0 +1,28 @@
+out
+└── hadoopnode
+    ├── container_1774213440689_0001_01_000001
+    │   ├── directory.info
+    │   ├── launch_container.sh
+    │   ├── prelaunch.err
+    │   ├── prelaunch.out
+    │   ├── stderr
+    │   ├── stdout
+    │   └── syslog
+    ├── container_1774213440689_0001_01_000002
+    │   ├── directory.info
+    │   ├── launch_container.sh
+    │   ├── prelaunch.err
+    │   ├── prelaunch.out
+    │   ├── stderr
+    │   ├── stdout
+    │   └── syslog
+    └── container_1774213440689_0001_01_000003
+        ├── directory.info
+        ├── launch_container.sh
+        ├── prelaunch.err
+        ├── prelaunch.out
+        ├── stderr
+        ├── stdout
+        └── syslog
+
+5 directories, 21 files

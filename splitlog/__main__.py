@@ -126,12 +126,17 @@ def main(cli_args: Optional[List[str]] = None) -> None:
     assert args.output_folder is not None, "output_folder argument must be present"
 
     from splitlog import split, ParseError
-    from splitlog.outputfolder import new_output_folder
+    from fsspec.implementations.dirfs import DirFileSystem  # type: ignore
 
     with _open_input(args.input_file) as infile:
         try:
-            with new_output_folder(args.output_folder) as output_folder:
-                split(infile, output_folder)
+            # Atomic directory creation. Fails if it already exists or if parent is missing.
+            args.output_folder.mkdir()
+            # use fsspec DirFileSystem to handle output folder
+            output_folder = DirFileSystem(
+                path=str(args.output_folder), auto_mkdir=False
+            )
+            split(infile, output_folder)
         except FileNotFoundError as e:
             _error_exit(e)
         except FileExistsError as e:

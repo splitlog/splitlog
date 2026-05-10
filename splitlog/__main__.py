@@ -90,8 +90,11 @@ def _version_exit() -> None:
     metadata = distribution(_NAME)
 
     version = metadata.version
-    license_path = next((f for f in metadata.files if f.name == "LICENSE"), None)
-    license_text = license_path.read_text() if license_path else None
+    if metadata.files:
+        license_path = next((f for f in metadata.files if f.name == "LICENSE"), None)
+        license_text = license_path.read_text() if license_path else None
+    else:
+        license_text = None
 
     if license_text:
         print(f"{_NAME} {version}\n\n{license_text}")

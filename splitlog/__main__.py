@@ -86,14 +86,14 @@ def _open_input(file: Optional[Path]) -> BinaryIO:
         return sys.stdin.buffer
 
 
-def _version_exit():
+def _version_exit() -> None:
     metadata = distribution(_NAME)
 
     version = metadata.version
-    license = metadata.read_text("LICENSE")
+    license_text = metadata.read_text("LICENSE")
 
-    if license:
-        print(f"{_NAME} {version}\n\n{license}")
+    if license_text:
+        print(f"{_NAME} {version}\n\n{license_text}")
     else:
         print(f"{_NAME} {version}")
 
@@ -101,8 +101,6 @@ def _version_exit():
 
 
 def main(cli_args: Optional[List[str]] = None) -> None:
-    import sys
-
     if cli_args is None:
         cli_args = sys.argv[1:]
 

@@ -90,10 +90,10 @@ def _version_exit():
     metadata = distribution(_NAME)
 
     version = metadata.version
-    license = metadata.read_text("LICENSE")
+    license_text = metadata.read_text("LICENSE")
 
-    if license:
-        print(f"{_NAME} {version}\n\n{license}")
+    if license_text:
+        print(f"{_NAME} {version}\n\n{license_text}")
     else:
         print(f"{_NAME} {version}")
 

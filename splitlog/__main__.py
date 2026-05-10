@@ -76,7 +76,7 @@ def _parse_args(args: List[str]) -> _Arguments:
 
 def _error_exit(error: Exception) -> None:
     print(error, file=sys.stderr)
-    exit(1)
+    sys.exit(1)
 
 
 def _open_input(file: Optional[Path]) -> BinaryIO:
@@ -97,7 +97,7 @@ def _version_exit():
     else:
         print(f"{_NAME} {version}")
 
-    exit(0)
+    sys.exit(0)
 
 
 def main(cli_args: Optional[List[str]] = None) -> None:

@@ -86,7 +86,7 @@ def _open_input(file: Optional[Path]) -> BinaryIO:
         return sys.stdin.buffer
 
 
-def _version_exit():
+def _version_exit() -> None:
     metadata = distribution(_NAME)
 
     version = metadata.version

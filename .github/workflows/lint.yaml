@@ -27,7 +27,7 @@ jobs:
         run: pipx install poetry~=2.3.2
       - name: Setup python
         id: setup-python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'

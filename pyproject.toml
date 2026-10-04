@@ -25,7 +25,7 @@ classifiers = [
 dependencies = [
     "python-dateutil (>=2.9.0,<3.0.0)",
     "pytz (>=2026.4)",
-    "fsspec (>=2026.7.0)",
+    "fsspec (>=2026.9.0)",
 ]
 
 
